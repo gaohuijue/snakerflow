@@ -63,11 +63,12 @@ public class TaskService extends AccessService implements ITaskService {
 	public Task complete(String taskId, String operator, Map<String, Object> args) {
 		Task task = access().getTask(taskId);
 		AssertHelper.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-		task.setVariable(JsonHelper.toJson(args));
 		if(!isAllowed(task, operator)) {
 			throw new SnakerException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
 		}
 		HistoryTask history = new HistoryTask(task);
+                //GHJ modified,HitsTask变量逻辑上应保持与Task任务变量一致。将下面这句移到了构造历史任务的后面
+		task.setVariable(JsonHelper.toJson(args));
 		history.setFinishTime(DateHelper.getTime());
 		history.setTaskState(STATE_FINISH);
 		history.setOperator(operator);
